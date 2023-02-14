@@ -3,11 +3,13 @@ const router=express.Router();
 const User=require('../models/User');
 const { body, validationResult } = require('express-validator');
 const bcrypt=require('bcrypt');
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+const authmiddle=require('../middleware/authmiddleware');
+
 
 JWT_Secret='Thisisthethirdpartofjwtithelpstodetectwheatherdataismanupluatedornot'
 
-//creating a user using post req "/api/auth/createuser"
+//Route 1.creating a user using post req "/api/auth/createuser"
 router.post("/createuser",[
     body('email','Invalid email').isEmail(),
     body('password','Password must be 5 chars long').isLength({ min: 5 }),
@@ -52,7 +54,7 @@ router.post("/createuser",[
 })
 
 
-//creating a login route using post req "/api/auth/login"
+//Route 2.creating a login route using post req "/api/auth/login"
 
 //added simple validation on the client side
 router.post('/login',[
@@ -92,6 +94,18 @@ async(req,res)=>{
     }catch(err){
         console.error(err.message);
         res.status(500).send("This time Musibat ka jar yaha hai");
+    }
+})
+
+//Route 3.Geting user data using post request "/api/auth/getuser"  Login requied
+router.post('/getuser', authmiddle, async(req, res)=>{
+    try {
+        const id=req.user.id;
+        const data=await User.findById(id).select("-password");
+        res.send(data);
+    }catch (err) {
+        console.error(err.message);
+        res.status(500).send("Musibat ka jar getuser route me hai");
     }
 })
 
