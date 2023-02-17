@@ -93,7 +93,7 @@ router.delete('/delete/:id',authmiddle, async(req,res)=>{
         res.json({"success":"Note deleted", note:note});
     }catch(err){
         console.error(err.message);
-        res.status(500).send("Musibat ka jar update notes hai");
+        res.status(500).send("Musibat ka jar delete notes hai");
     }    
 })
 
