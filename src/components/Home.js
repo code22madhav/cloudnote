@@ -4,7 +4,7 @@ import Notes from './Notes'
 
 function Home() {
   return (
-        <div>
+        <div className='col-md-10 col-12 mx-auto'>
         <Notes/>
         </div>
   )

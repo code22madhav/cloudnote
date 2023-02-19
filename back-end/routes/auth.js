@@ -16,17 +16,18 @@ router.post("/createuser",[
     body('name','Name should be minimum 3').isLength({ min: 3 }),
 ],async(req,res)=>{
     //Throw error if there is problem in validation
+    let success=false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+        return res.status(400).json({success, errors: errors.array() });
     }
-
-   
+    
+    
     //checking weather a user exist or not by using findOne
     try{
         let user=await User.findOne({email: req.body.email});
         if(user){
-            return res.status(400).json({error:"Email allready existed"});
+            return res.status(400).json({success, error:"Email allready existed"});
         }
         
         const salt=await bcrypt.genSalt(10);
@@ -45,9 +46,10 @@ router.post("/createuser",[
             }
           }
           const authtokenn=jwt.sign(data,JWT_Secret)
-          res.json({authtokenn});
+          success=true;
+          res.json({success, authtokenn});
 
-    }catch(err){
+    }catch(err){ 
         console.error(err.message);
         res.status(500).send("Musibat ka jar yaha hai");
     }
@@ -69,16 +71,17 @@ async(req,res)=>{
     }
 
     const {email, password}=req.body;
+    let success=false;
     try{
         //checking whether  user exist or not 
         const user=await User.findOne({email:req.body.email});
         if(!user){
-            return res.status(400).json({error:"Please enter correct credentials"});
+            return res.status(400).json({success, error:"Please enter correct credentials"});
         }
         //if user exist then compare password
         const passwordcompare=await bcrypt.compare(password,user.password);
         if(!passwordcompare){
-            return res.status(400).json({error:"Please enter correct credentials"});
+            return res.status(400).json({success, error:"Please enter correct credentials"});
         }
         
         //if password is correct then send auth token
@@ -87,8 +90,9 @@ async(req,res)=>{
                 id:user.id,
             }
         }
+        success=true;
         const authtokenn=jwt.sign(payload,JWT_Secret)
-        res.json({authtokenn});
+        res.json({success, authtokenn});
 
 
     }catch(err){
