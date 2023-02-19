@@ -1,8 +1,9 @@
 import React from 'react'
-import {Link, useLocation} from 'react-router-dom'
+import {Link, useLocation, useNavigate} from 'react-router-dom'
 
 function Navbar() {
     const location=useLocation();      //it gives current loc of url. used to dark the navitem when clicked
+    const navigate=useNavigate();
   return (
         <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
         <div className="container-fluid">
@@ -19,8 +20,9 @@ function Navbar() {
                 <Link className={`nav-link ${location.pathname==='/about'? "active":""}`} to="/about">About</Link>
             </li>
             </ul>
-            <Link className="btn btn-primary d-flex mx-1" to="/login" role="button">Login</Link>
-            <Link className="btn btn-primary d-flex mx-1" to="/signup" role="button">Signup</Link>
+            {!localStorage.getItem('token')?
+            <><Link className="btn btn-primary d-flex mx-1" to="/login" role="button">Login</Link>
+            <Link className="btn btn-primary d-flex mx-1" to="/signup" role="button">Signup</Link> </>: <Link className="btn btn-primary d-flex mx-1" to="/login" role="button" onClick={()=>{localStorage.removeItem('token'); navigate('/login')}}>Logout</Link>}
         </div>
         </div>
     </nav>
